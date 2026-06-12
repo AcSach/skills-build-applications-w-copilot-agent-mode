@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+// Activities component for displaying user activities
 const Activities = () => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
