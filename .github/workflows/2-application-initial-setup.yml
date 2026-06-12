@@ -111,7 +111,10 @@ jobs:
       # END: Check practical exercise
 
       - name: Fail job if not all checks passed
-        if: contains(steps.*.outcome, 'failure')
+        if: |
+          steps.check-react-19.outputs.occurrences < 1 ||
+          steps.check-express.outputs.occurrences < 1 ||
+          steps.check-mongoose.outputs.occurrences < 1
         run: exit 1
 
   post_next_step_content:
