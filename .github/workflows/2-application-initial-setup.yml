@@ -111,7 +111,7 @@ jobs:
       # END: Check practical exercise
 
       - name: Fail job if not all checks passed
-        if: ${{ steps.check-react-19.outcome != 'success' || steps.check-express.outcome != 'success' || steps.check-mongoose.outcome != 'success' }}
+        if: ${{ toNumber(steps.check-react-19.outputs.occurrences || '0') < 1 || toNumber(steps.check-express.outputs.occurrences || '0') < 1 || toNumber(steps.check-mongoose.outputs.occurrences || '0') < 1 }}
         run: exit 1
 
   post_next_step_content:
