@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "OctoFit Tracker Backend - Express + MongoDB",
   "main": "dist/server.js",
   "scripts": {
