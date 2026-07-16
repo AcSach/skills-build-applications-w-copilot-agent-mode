@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { fetchCollection } from '../api';
 
 const Workouts = () => {
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const apiEndpoint = 'https://-8000.app.github.dev/api/workouts';
 
   useEffect(() => {
-    const fetchWorkouts = async () => {
+    const loadWorkouts = async () => {
       try {
-        const response = await fetch(apiEndpoint);
-        const data = await response.json();
+        const data = await fetchCollection('workouts', 'workouts');
         setWorkouts(data);
       } catch (error) {
         console.error('Error fetching workouts:', error);
@@ -18,28 +17,27 @@ const Workouts = () => {
       }
     };
 
-    fetchWorkouts();
+    loadWorkouts();
   }, []);
 
   if (loading) return <div>Loading workouts...</div>;
 
   return (
-    <div className="workouts-container">
+    <div className="card-grid">
       <h2>Workouts</h2>
-      <div className="workouts-list">
-        {workouts.length > 0 ? (
-          workouts.map((workout) => (
-            <div key={workout.id} className="workout-item">
-              <h3>{workout.title}</h3>
-              <p>Duration: {workout.duration} minutes</p>
-              <p>Type: {workout.type}</p>
-              <p>{workout.description}</p>
-            </div>
-          ))
-        ) : (
-          <p>No workouts found.</p>
-        )}
-      </div>
+      {workouts.length > 0 ? (
+        workouts.map((workout, index) => (
+          <div key={workout._id || `${workout.name}-${index}`} className="card-item">
+            <h3>{workout.name}</h3>
+            <p>Category: {workout.category}</p>
+            <p>Difficulty: {workout.difficulty}</p>
+            <p>Duration: {workout.durationMinutes} minutes</p>
+            <p>{workout.description}</p>
+          </div>
+        ))
+      ) : (
+        <p>No workouts found.</p>
+      )}
     </div>
   );
 };

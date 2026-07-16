@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { fetchCollection } from '../api';
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
-  const apiEndpoint = 'https://-8000.app.github.dev/api/teams';
 
   useEffect(() => {
-    const fetchTeams = async () => {
+    const loadTeams = async () => {
       try {
-        const response = await fetch(apiEndpoint);
-        const data = await response.json();
+        const data = await fetchCollection('teams', 'teams');
         setTeams(data);
       } catch (error) {
         console.error('Error fetching teams:', error);
@@ -18,27 +17,26 @@ const Teams = () => {
       }
     };
 
-    fetchTeams();
+    loadTeams();
   }, []);
 
   if (loading) return <div>Loading teams...</div>;
 
   return (
-    <div className="teams-container">
+    <div className="card-grid">
       <h2>Teams</h2>
-      <div className="teams-grid">
-        {teams.length > 0 ? (
-          teams.map((team) => (
-            <div key={team.id} className="team-card">
-              <h3>{team.name}</h3>
-              <p>Members: {team.memberCount}</p>
-              <p>{team.description}</p>
-            </div>
-          ))
-        ) : (
-          <p>No teams found.</p>
-        )}
-      </div>
+      {teams.length > 0 ? (
+        teams.map((team, index) => (
+          <div key={team._id || `${team.name}-${index}`} className="card-item">
+            <h3>{team.name}</h3>
+            <p>School: {team.school}</p>
+            <p>Points: {team.points}</p>
+            <p>Members: {team.members?.join(', ') || 'No members listed'}</p>
+          </div>
+        ))
+      ) : (
+        <p>No teams found.</p>
+      )}
     </div>
   );
 };

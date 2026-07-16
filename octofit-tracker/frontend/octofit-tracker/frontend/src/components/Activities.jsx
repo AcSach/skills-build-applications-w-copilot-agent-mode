@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { fetchCollection } from '../api';
 
-// Activities component for displaying user activities
 const Activities = () => {
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const apiEndpoint = 'https://-8000.app.github.dev/api/activities';
 
   useEffect(() => {
-    const fetchActivities = async () => {
+    const loadActivities = async () => {
       try {
-        const response = await fetch(apiEndpoint);
-        const data = await response.json();
+        const data = await fetchCollection('activities', 'activities');
         setActivities(data);
       } catch (error) {
         console.error('Error fetching activities:', error);
@@ -19,26 +17,26 @@ const Activities = () => {
       }
     };
 
-    fetchActivities();
+    loadActivities();
   }, []);
 
   if (loading) return <div>Loading activities...</div>;
 
   return (
-    <div className="activities-container">
+    <div className="card-grid">
       <h2>Activities</h2>
-      <div className="activities-list">
-        {activities.length > 0 ? (
-          activities.map((activity) => (
-            <div key={activity.id} className="activity-item">
-              <h3>{activity.name}</h3>
-              <p>{activity.description}</p>
-            </div>
-          ))
-        ) : (
-          <p>No activities found.</p>
-        )}
-      </div>
+      {activities.length > 0 ? (
+        activities.map((activity, index) => (
+          <div key={activity._id || `${activity.type}-${index}`} className="card-item">
+            <h3>{activity.type}</h3>
+            <p>{activity.userName}</p>
+            <p>Duration: {activity.durationMinutes} minutes</p>
+            <p>Points: {activity.points}</p>
+          </div>
+        ))
+      ) : (
+        <p>No activities found.</p>
+      )}
     </div>
   );
 };

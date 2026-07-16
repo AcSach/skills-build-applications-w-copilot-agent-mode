@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { fetchCollection } from '../api';
 
 const Leaderboard = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
-  const apiEndpoint = 'https://-8000.app.github.dev/api/leaderboard';
 
   useEffect(() => {
-    const fetchLeaderboard = async () => {
+    const loadLeaderboard = async () => {
       try {
-        const response = await fetch(apiEndpoint);
-        const data = await response.json();
+        const data = await fetchCollection('leaderboard', 'leaderboard');
         setLeaderboard(data);
       } catch (error) {
         console.error('Error fetching leaderboard:', error);
@@ -18,7 +17,7 @@ const Leaderboard = () => {
       }
     };
 
-    fetchLeaderboard();
+    loadLeaderboard();
   }, []);
 
   if (loading) return <div>Loading leaderboard...</div>;
@@ -37,9 +36,9 @@ const Leaderboard = () => {
         <tbody>
           {leaderboard.length > 0 ? (
             leaderboard.map((entry, index) => (
-              <tr key={entry.id}>
-                <td>{index + 1}</td>
-                <td>{entry.username}</td>
+              <tr key={entry._id || `${entry.name}-${index}`}>
+                <td>{entry.rank || index + 1}</td>
+                <td>{entry.name}</td>
                 <td>{entry.points}</td>
               </tr>
             ))

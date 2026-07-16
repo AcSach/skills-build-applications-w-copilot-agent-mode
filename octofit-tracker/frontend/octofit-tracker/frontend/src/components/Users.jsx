@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { fetchCollection } from '../api';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const apiEndpoint = 'https://-8000.app.github.dev/api/users';
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const loadUsers = async () => {
       try {
-        const response = await fetch(apiEndpoint);
-        const data = await response.json();
+        const data = await fetchCollection('users', 'users');
         setUsers(data);
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -18,27 +17,26 @@ const Users = () => {
       }
     };
 
-    fetchUsers();
+    loadUsers();
   }, []);
 
   if (loading) return <div>Loading users...</div>;
 
   return (
-    <div className="users-container">
+    <div className="card-grid">
       <h2>Users</h2>
-      <div className="users-list">
-        {users.length > 0 ? (
-          users.map((user) => (
-            <div key={user.id} className="user-item">
-              <h3>{user.name}</h3>
-              <p>Email: {user.email}</p>
-              <p>Username: {user.username}</p>
-            </div>
-          ))
-        ) : (
-          <p>No users found.</p>
-        )}
-      </div>
+      {users.length > 0 ? (
+        users.map((user, index) => (
+          <div key={user._id || `${user.name}-${index}`} className="card-item">
+            <h3>{user.name}</h3>
+            <p>Email: {user.email}</p>
+            <p>Grade: {user.gradeLevel}</p>
+            <p>Favorite activity: {user.favoriteActivity}</p>
+          </div>
+        ))
+      ) : (
+        <p>No users found.</p>
+      )}
     </div>
   );
 };
