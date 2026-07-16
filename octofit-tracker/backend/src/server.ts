@@ -2,7 +2,11 @@ import express, { Express, Request, Response } from 'express';
 import mongoose from 'mongoose';
 
 const app: Express = express();
-const PORT = 8000;
+const PORT = Number(process.env.PORT || 8000);
+const CODESPACE_NAME = process.env.CODESPACE_NAME;
+const BASE_URL = CODESPACE_NAME
+  ? `https://${CODESPACE_NAME}-${PORT}.app.github.dev`
+  : `http://localhost:${PORT}`;
 const MONGODB_URI = 'mongodb://localhost:27017/octofit-tracker';
 
 // Middleware
@@ -20,7 +24,7 @@ mongoose.connect(MONGODB_URI)
 
 // Routes
 app.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'OctoFit Tracker API is running!' });
+  res.json({ message: 'OctoFit Tracker API is running!', baseUrl: BASE_URL });
 });
 
 app.get('/health', (req: Request, res: Response) => {
@@ -38,6 +42,6 @@ app.use((err: any, req: Request, res: Response) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`✓ Server is running on http://localhost:${PORT}`);
+  console.log(`✓ Server is running on ${BASE_URL}`);
   console.log(`✓ MongoDB connection: ${MONGODB_URI}`);
 });
