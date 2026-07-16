@@ -4,33 +4,39 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const database_1 = require("./config/database");
-const users_1 = __importDefault(require("./routes/users"));
-const teams_1 = __importDefault(require("./routes/teams"));
-const activities_1 = __importDefault(require("./routes/activities"));
-const leaderboard_1 = __importDefault(require("./routes/leaderboard"));
-const workouts_1 = __importDefault(require("./routes/workouts"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const app = (0, express_1.default)();
-const port = 8000;
+const PORT = 8000;
+const MONGODB_URI = 'mongodb://localhost:27017/octofit-tracker';
+// Middleware
 app.use(express_1.default.json());
-const codespaceName = process.env.CODESPACE_NAME;
-const baseUrl = codespaceName
-    ? `https://${codespaceName}-8000.app.github.dev`
-    : 'http://localhost:8000';
-app.get('/api', (_req, res) => {
-    res.json({ message: 'OctoFit Tracker API is running', baseUrl });
+app.use(express_1.default.urlencoded({ extended: true }));
+// Connect to MongoDB
+mongoose_1.default.connect(MONGODB_URI)
+    .then(() => {
+    console.log('Connected to MongoDB');
+})
+    .catch((error) => {
+    console.error('MongoDB connection error:', error);
 });
-app.use('/api/users', users_1.default);
-app.use('/api/teams', teams_1.default);
-app.use('/api/activities', activities_1.default);
-app.use('/api/leaderboard', leaderboard_1.default);
-app.use('/api/workouts', workouts_1.default);
-app.listen(port, async () => {
-    console.log(`Server running on ${baseUrl}`);
-    try {
-        await (0, database_1.connectToDatabase)();
-    }
-    catch (error) {
-        console.warn('Database connection unavailable, continuing with in-memory routes.', error);
-    }
+// Routes
+app.get('/', (req, res) => {
+    res.json({ message: 'OctoFit Tracker API is running!' });
 });
+app.get('/health', (req, res) => {
+    res.json({
+        status: 'ok',
+        message: 'Backend is healthy'
+    });
+});
+// Error handling middleware
+app.use((err, req, res) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
+});
+// Start server
+app.listen(PORT, () => {
+    console.log(`✓ Server is running on http://localhost:${PORT}`);
+    console.log(`✓ MongoDB connection: ${MONGODB_URI}`);
+});
+//# sourceMappingURL=server.js.map

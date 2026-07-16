@@ -1,36 +1,47 @@
-import express from 'express';
-import { connectToDatabase } from './config/database';
-import usersRouter from './routes/users';
-import teamsRouter from './routes/teams';
-import activitiesRouter from './routes/activities';
-import leaderboardRouter from './routes/leaderboard';
-import workoutsRouter from './routes/workouts';
+import express, { Express, Request, Response } from 'express';
+import mongoose from 'mongoose';
 
-const app = express();
-const port = 8000;
+const app: Express = express();
+const PORT = Number(process.env.PORT || 8000);
+const CODESPACE_NAME = process.env.CODESPACE_NAME;
+const BASE_URL = CODESPACE_NAME
+  ? `https://${CODESPACE_NAME}-8000.app.github.dev`
+  : `http://localhost:${PORT}`;
+const MONGODB_URI = 'mongodb://localhost:27017/octofit-tracker';
 
+// Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const codespaceName = process.env.CODESPACE_NAME;
-const baseUrl = codespaceName
-  ? `https://${codespaceName}-8000.app.github.dev`
-  : 'http://localhost:8000';
+// Connect to MongoDB
+mongoose.connect(MONGODB_URI)
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((error) => {
+    console.error('MongoDB connection error:', error);
+  });
 
-app.get('/api', (_req, res) => {
-  res.json({ message: 'OctoFit Tracker API is running', baseUrl });
+// Routes
+app.get('/', (req: Request, res: Response) => {
+  res.json({ message: 'OctoFit Tracker API is running!', baseUrl: BASE_URL });
 });
 
-app.use('/api/users', usersRouter);
-app.use('/api/teams', teamsRouter);
-app.use('/api/activities', activitiesRouter);
-app.use('/api/leaderboard', leaderboardRouter);
-app.use('/api/workouts', workoutsRouter);
+app.get('/health', (req: Request, res: Response) => {
+  res.json({ 
+    status: 'ok',
+    message: 'Backend is healthy'
+  });
+});
 
-app.listen(port, async () => {
-  console.log(`Server running on ${baseUrl}`);
-  try {
-    await connectToDatabase();
-  } catch (error) {
-    console.warn('Database connection unavailable, continuing with in-memory routes.', error);
-  }
+// Error handling middleware
+app.use((err: any, req: Request, res: Response) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`✓ Server is running on ${BASE_URL}`);
+  console.log(`✓ MongoDB connection: ${MONGODB_URI}`);
 });
