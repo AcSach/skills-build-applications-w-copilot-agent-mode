@@ -5,7 +5,7 @@ const app: Express = express();
 const PORT = Number(process.env.PORT || 8000);
 const CODESPACE_NAME = process.env.CODESPACE_NAME;
 const BASE_URL = CODESPACE_NAME
-  ? `https://${CODESPACE_NAME}-${PORT}.app.github.dev`
+  ? `https://${CODESPACE_NAME}-8000.app.github.dev`
   : `http://localhost:${PORT}`;
 const MONGODB_URI = 'mongodb://localhost:27017/octofit-tracker';
 
