@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react';
-import { fetchCollection } from '../api';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const apiEndpoint = `https://${import.meta.env.VITE_CODESPACE_NAME || 'localhost'}-8000.app.github.dev/api/users/`;
 
   useEffect(() => {
     const loadUsers = async () => {
       try {
-        const data = await fetchCollection('users/', 'users');
+        const response = await fetch(apiEndpoint);
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+        const payload = await response.json();
+        const data = Array.isArray(payload) ? payload : payload.users || payload.results || payload.items || [];
         setUsers(data);
       } catch (error) {
         console.error('Error fetching users:', error);

@@ -1,14 +1,19 @@
 import { useEffect, useState } from 'react';
-import { fetchCollection } from '../api';
 
 const Workouts = () => {
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const apiEndpoint = `https://${import.meta.env.VITE_CODESPACE_NAME || 'localhost'}-8000.app.github.dev/api/workouts/`;
 
   useEffect(() => {
     const loadWorkouts = async () => {
       try {
-        const data = await fetchCollection('workouts/', 'workouts');
+        const response = await fetch(apiEndpoint);
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+        const payload = await response.json();
+        const data = Array.isArray(payload) ? payload : payload.workouts || payload.results || payload.items || [];
         setWorkouts(data);
       } catch (error) {
         console.error('Error fetching workouts:', error);
