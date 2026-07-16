@@ -8,7 +8,7 @@ const Workouts = () => {
   useEffect(() => {
     const loadWorkouts = async () => {
       try {
-        const data = await fetchCollection('workouts', 'workouts');
+        const data = await fetchCollection('workouts/', 'workouts');
         setWorkouts(data);
       } catch (error) {
         console.error('Error fetching workouts:', error);

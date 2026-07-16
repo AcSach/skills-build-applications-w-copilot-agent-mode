@@ -8,7 +8,7 @@ const Leaderboard = () => {
   useEffect(() => {
     const loadLeaderboard = async () => {
       try {
-        const data = await fetchCollection('leaderboard', 'leaderboard');
+        const data = await fetchCollection('leaderboard/', 'leaderboard');
         setLeaderboard(data);
       } catch (error) {
         console.error('Error fetching leaderboard:', error);

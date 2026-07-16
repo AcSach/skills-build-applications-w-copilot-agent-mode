@@ -8,7 +8,7 @@ const Teams = () => {
   useEffect(() => {
     const loadTeams = async () => {
       try {
-        const data = await fetchCollection('teams', 'teams');
+        const data = await fetchCollection('teams/', 'teams');
         setTeams(data);
       } catch (error) {
         console.error('Error fetching teams:', error);

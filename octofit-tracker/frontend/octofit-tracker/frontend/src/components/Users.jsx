@@ -8,7 +8,7 @@ const Users = () => {
   useEffect(() => {
     const loadUsers = async () => {
       try {
-        const data = await fetchCollection('users', 'users');
+        const data = await fetchCollection('users/', 'users');
         setUsers(data);
       } catch (error) {
         console.error('Error fetching users:', error);

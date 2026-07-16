@@ -8,7 +8,7 @@ const Activities = () => {
   useEffect(() => {
     const loadActivities = async () => {
       try {
-        const data = await fetchCollection('activities', 'activities');
+        const data = await fetchCollection('activities/', 'activities');
         setActivities(data);
       } catch (error) {
         console.error('Error fetching activities:', error);
